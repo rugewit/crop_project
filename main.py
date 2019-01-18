@@ -45,10 +45,14 @@ class Scene(QGraphicsScene):
 def initUI(self):
     uic.loadUi('MainWindow.ui', self)
     self.btn_load_img.clicked.connect(self.load_image)
+    self.imageLabel = QLabel()
 
-    self.scene = Scene(self.graphicsView.size().width(),self.graphicsView.size().height())
+    #self.scene = Scene(self.graphicsView.size().width(),self.graphicsView.size().height())
 
-    self.graphicsView.setScene(self.scene)
+    #self.graphicsView.setScene(self.scene)
+    self.scrollArea.setWidget(self.imageLabel)
+    self.imageLabel.setAlignment( Qt.AlignVCenter | Qt.AlignCenter)
+    #self.setCentralWidget(self.scrollArea)
 
 
 
@@ -70,8 +74,9 @@ class MainWnd(QMainWindow):
         if fname != None:
             img = QImage(fname)
             try:
-                self.graphicsView.resize(QImage(img).size().width(),QImage(img).size().height())
-                self.scene.setSceneRect(0, 0, QImage(img).size().width(), QImage(img).size().height())
+                #self.graphicsView.resize(img.width(),img.height())
+                #self.scene.setSceneRect(0, 0, img.width(), img.height())
+                self.imageLabel.setPixmap(QPixmap.fromImage(img))
             except Exception as e:
                 print(e)
         print('by loading',img)
