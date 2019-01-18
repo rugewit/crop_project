@@ -39,36 +39,21 @@ class Label(QLabel):
             print(temp)
             print(temp.rect())
             print(temp.size())
+            x0 = (self.width() - temp.width()) / 2
+            y0 = (self.height() - temp.height()) / 2
+            if x0 < 0:
+                x0 = 0
+            if y0 < 0:
+                y0 = 0
+            print(x0, y0)
         except Exception as e:
             print(e)
         painter = QPainter(self)
         if self.has_img:
-            painter.setPen(QPen(QColor('red'), 6, Qt.SolidLine, Qt.RoundCap))
-            painter.setBrush( QBrush( QColor('green') , Qt.SolidPattern) )
-            painter.drawLine(0, 0, 20, 20)
+            painter.setPen(QPen(QColor('red'), 1, Qt.SolidLine, Qt.RoundCap))
+            painter.setBrush(QBrush(QColor('green'), Qt.SolidPattern))
 
-
-
-
-
-
-
-class Scene(QGraphicsScene):
-    def __init__(self,w,h):
-        super().__init__()
-        self.setSceneRect(0, 0, w, h)
-
-
-    def drawBackground(self, painter, rect):
-        try:
-            print(11)
-            super().drawBackground(painter, rect)
-            painter.drawImage(QPoint(0,0),img)
-        except Exception as e:
-            print(e)
-
-
-
+            painter.drawLine(x0, y0, x0 + temp.width(), y0 + temp.height())
 
 
 def initUI(self):
