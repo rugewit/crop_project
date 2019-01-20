@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QPushButton, QWidget, QDialog, QApplication, QMainWi
     QGraphicsRectItem, QGraphicsSceneMouseEvent, QGraphicsEllipseItem, QFrame, QLabel, QGraphicsTextItem, QFileDialog
 from PyQt5.QtCore import Qt, QMimeData, QPoint, QRect, QSize, QRectF, QSizeF, QPropertyAnimation, QTimeLine, QObject, \
     QTimer, QTime
-from PyQt5.QtGui import QDrag, QImage, QColor, QPen, QBrush
+from PyQt5.QtGui import QDrag, QImage, QColor, QPen, QBrush, QPaintEvent
 from PyQt5 import uic
 import random
 import winsound
@@ -17,7 +17,7 @@ import sys
 from PyQt5.uic.properties import QtGui
 #import settings
 from PyQt5.QtGui import QTransform
-
+import settings
 
 
 
@@ -33,6 +33,7 @@ class Label(QLabel):
         self.has_img = True
 
     def paintEvent(self, QPaintEvent):
+        temp = None
         super().paintEvent(QPaintEvent)
         try:
             temp = self.pixmap()
@@ -52,8 +53,13 @@ class Label(QLabel):
         if self.has_img:
             painter.setPen(QPen(QColor('red'), 1, Qt.SolidLine, Qt.RoundCap))
             painter.setBrush(QBrush(QColor('green'), Qt.SolidPattern))
+            width = temp.width()
+            height = temp.height()
+            for i in range(0, settings.count_x + 1):
+                painter.drawLine(x0 + i * width //  settings.count_x, y0,x0 + i * width //  settings.count_x, y0 + height )
+            for i in range(0,settings.count_y + 1):
+                painter.drawLine(x0 , y0 + i * (height // settings.count_y)  ,x0 + width, y0 + i * (height // settings.count_y)  )
 
-            painter.drawLine(x0, y0, x0 + temp.width(), y0 + temp.height())
 
 
 def initUI(self):
@@ -66,6 +72,8 @@ def initUI(self):
     #self.graphicsView.setScene(self.scene)
     self.scrollArea.setWidget(self.imageLabel)
     self.imageLabel.setAlignment( Qt.AlignVCenter | Qt.AlignCenter)
+
+    self.btn_confirm.clicked.connect(self.confirm_input)
     #self.setCentralWidget(self.scrollArea)
 
 
@@ -75,6 +83,7 @@ class MainWnd(QMainWindow):
     def __init__(self):
         super().__init__()
         initUI(self)
+        self.imageLabel.setImage(QImage('bg.jpg'))
 
     def load_image(self):
 
@@ -95,7 +104,13 @@ class MainWnd(QMainWindow):
                 print(e)
         print('by loading',img)
 
-
+    def confirm_input(self):
+        try:
+            settings.count_x = int(self.lineEdit_x.text())
+            settings.count_y = int(self.lineEdit_y.text())
+            self.imageLabel.paintEvent(QPaintEvent)
+        except Exception as e:
+            print(e)
 
 
 

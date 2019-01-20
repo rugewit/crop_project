@@ -95,7 +95,11 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QLineEdit" name="lineEdit_x">
+        <property name="text">
+         <string>5</string>
+        </property>
+       </widget>
       </item>
       <item>
        <spacer name="horizontalSpacer_2">
@@ -114,7 +118,11 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_2"/>
+       <widget class="QLineEdit" name="lineEdit_y">
+        <property name="text">
+         <string>5</string>
+        </property>
+       </widget>
       </item>
       <item>
        <spacer name="horizontalSpacer_4">
@@ -150,7 +158,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="btn_confirm">
         <property name="styleSheet">
          <string notr="true">font: 12pt &quot;Century&quot;;</string>
         </property>
@@ -193,8 +201,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1070</width>
-         <height>656</height>
+         <width>1068</width>
+         <height>650</height>
         </rect>
        </property>
       </widget>
