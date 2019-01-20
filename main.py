@@ -18,7 +18,8 @@ from PyQt5.uic.properties import QtGui
 #import settings
 from PyQt5.QtGui import QTransform
 import settings
-
+from PIL import Image
+import os
 
 
 img = None
@@ -72,11 +73,16 @@ def initUI(self):
     #self.graphicsView.setScene(self.scene)
     self.scrollArea.setWidget(self.imageLabel)
     self.imageLabel.setAlignment( Qt.AlignVCenter | Qt.AlignCenter)
-
     self.btn_confirm.clicked.connect(self.confirm_input)
+    self.btn_choose_folder.clicked.connect(self.output_folder)
+    self.btn_crop.clicked.connect(self.start_croping)
     #self.setCentralWidget(self.scrollArea)
+    #crop()
 
 
+def crop(path,x1,x2,y1,y2,x,y):
+    img = Image.open('bg.jpg')
+    img.crop((x1, x2, y1, y2)).save(path+'%d-%d.jpg'%(x,y))
 
 
 class MainWnd(QMainWindow):
@@ -84,6 +90,8 @@ class MainWnd(QMainWindow):
         super().__init__()
         initUI(self)
         self.imageLabel.setImage(QImage('bg.jpg'))
+        settings.width = QImage('bg.jpg').width()
+        settings.height = QImage('bg.jpg').height()
 
     def load_image(self):
 
@@ -100,15 +108,37 @@ class MainWnd(QMainWindow):
                 #self.graphicsView.resize(img.width(),img.height())
                 #self.scene.setSceneRect(0, 0, img.width(), img.height())
                 self.imageLabel.setImage(img)
+                #дописать
             except Exception as e:
                 print(e)
         print('by loading',img)
+
+    def output_folder(self):
+        file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+
+
 
     def confirm_input(self):
         try:
             settings.count_x = int(self.lineEdit_x.text())
             settings.count_y = int(self.lineEdit_y.text())
-            self.imageLabel.paintEvent(QPaintEvent)
+            self.imageLabel.update()
+        except Exception as e:
+            print(e)
+
+    def start_croping(self):
+        #Переделать
+        #(x, y, w+x, h+y) ,а не (x1,x2,y1,y2)
+        try:
+            print(settings.width,settings.height)
+            for i in range(settings.count_x-1):
+                for y in range(settings.count_y-1):
+                    print('x1:',i*(settings.width//settings.count_x))
+                    print('x2:',(i+1)*(settings.width//settings.count_x))
+                    print('y1',y*(settings.height//settings.count_y))
+                    print('y2',(y+1)*(settings.height//settings.count_y))
+                    crop('d://temp//',i*(settings.width//settings.count_x),(i+1)*(settings.width//settings.count_x),
+                         y*(settings.height//settings.count_y),(y+1)*(settings.height//settings.count_y),i,y)
         except Exception as e:
             print(e)
 
