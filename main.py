@@ -20,9 +20,13 @@ from PyQt5.QtGui import QTransform
 import settings
 from PIL import Image
 import os
+import shutil
 
 
-img = None
+
+
+img = QImage('bg.jpg')
+img_path = 'bg.jpg'
 
 class Label(QLabel):
     def __init__(self):
@@ -52,10 +56,26 @@ class Label(QLabel):
             print(e)
         painter = QPainter(self)
         if self.has_img:
-            painter.setPen(QPen(QColor('red'), 1, Qt.SolidLine, Qt.RoundCap))
+            '''
+            painter.setPen(QPen(QColor('green'), 1, Qt.SolidLine, Qt.RoundCap))
+
+           
             painter.setBrush(QBrush(QColor('green'), Qt.SolidPattern))
+            painter.drawRect(0+x0, 0+y0,
+                 20, 20)
+            painter.setBrush(QBrush(QColor('yellow'), Qt.SolidPattern))
+            painter.drawRect(21+x0, 0+y0,
+                 20, 20)
+            painter.setBrush(QBrush(QColor('blue'), Qt.SolidPattern))
+            painter.drawRect(41+x0, 0+y0,
+                 20, 20)
+            painter.setBrush(QBrush(QColor('brown'), Qt.SolidPattern))
+            painter.drawRect(61+x0, 0+y0,
+                 20, 20)
+                 '''
             width = temp.width()
             height = temp.height()
+            painter.setPen(QPen(QColor('red'), 1, Qt.SolidLine, Qt.RoundCap))
             for i in range(0, settings.count_x + 1):
                 painter.drawLine(x0 + i * width //  settings.count_x, y0,x0 + i * width //  settings.count_x, y0 + height )
             for i in range(0,settings.count_y + 1):
@@ -80,18 +100,20 @@ def initUI(self):
     #crop()
 
 
-def crop(path,x1,x2,y1,y2,x,y):
-    img = Image.open('bg.jpg')
-    img.crop((x1, x2, y1, y2)).save(path+'%d-%d.jpg'%(x,y))
+def crop(path,x1, y1, x2, y2,x,y):
+    global img,img_path
+    im =Image.open(img_path)
+    im.crop((x1, y1, x2, y2)).save(path+'%d-%d.jpg'%(x,y))
 
 
 class MainWnd(QMainWindow):
+    global img,img_path
     def __init__(self):
         super().__init__()
         initUI(self)
-        self.imageLabel.setImage(QImage('bg.jpg'))
-        settings.width = QImage('bg.jpg').width()
-        settings.height = QImage('bg.jpg').height()
+        self.imageLabel.setImage(img)
+        settings.width = img.width()
+        settings.height = img.height()
 
     def load_image(self):
 
@@ -115,6 +137,7 @@ class MainWnd(QMainWindow):
 
     def output_folder(self):
         file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        settings.output_folder = file
 
 
 
@@ -127,18 +150,42 @@ class MainWnd(QMainWindow):
             print(e)
 
     def start_croping(self):
-        #Переделать
-        #(x, y, w+x, h+y) ,а не (x1,x2,y1,y2)
+        global img,img_path
+        try:
+            folder = settings.output_folder
+            for the_file in os.listdir(folder):
+                file_path = os.path.join(folder, the_file)
+                try:
+                    if os.path.isfile(file_path):
+                        os.unlink(file_path)
+                        # elif os.path.isdir(file_path): shutil.rmtree(file_path)
+                except Exception as e:
+                    print(e)
+            '''
+            crop('d://temp//',0, 0,
+                 20, 20, 0, 0)
+            crop('d://temp//', 21, 0,
+                 41, 20, 0, 1)
+            crop('d://temp//', 41, 0,
+                 61, 20, 1, 0)
+            crop('d://temp//', 61, 0,
+                 81, 20, 1, 1)
+            '''
+        except Exception as e:
+            print(e)
+
         try:
             print(settings.width,settings.height)
-            for i in range(settings.count_x-1):
-                for y in range(settings.count_y-1):
+            for i in range(settings.count_x):
+                for y in range(settings.count_y):
                     print('x1:',i*(settings.width//settings.count_x))
-                    print('x2:',(i+1)*(settings.width//settings.count_x))
+                    #print('deltax:',(settings.width//settings.count_x))
                     print('y1',y*(settings.height//settings.count_y))
-                    print('y2',(y+1)*(settings.height//settings.count_y))
-                    crop('d://temp//',i*(settings.width//settings.count_x),(i+1)*(settings.width//settings.count_x),
-                         y*(settings.height//settings.count_y),(y+1)*(settings.height//settings.count_y),i,y)
+                    #print('deltay',(settings.height//settings.count_y))
+                    x2 = (i+1)*(settings.width//settings.count_x)
+                    y2 = (y+1)*(settings.height//settings.count_y)
+                    crop(settings.output_folder,i*(settings.width//settings.count_x),y*(settings.height//settings.count_y),
+                         x2,y2,i,y)
         except Exception as e:
             print(e)
 
