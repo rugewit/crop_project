@@ -126,6 +126,7 @@ class MainWnd(QMainWindow):
             print(123)
         if fname != None:
             img = QImage(fname)
+            img_path = fname
             try:
                 #self.graphicsView.resize(img.width(),img.height())
                 #self.scene.setSceneRect(0, 0, img.width(), img.height())
