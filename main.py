@@ -117,7 +117,7 @@ class MainWnd(QMainWindow):
 
     def load_image(self):
 
-        global img
+        global img,img_path
         fname = None
         try:
             fname,_filter = QFileDialog.getOpenFileName(self, 'Open file',
