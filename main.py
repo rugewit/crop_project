@@ -29,6 +29,7 @@ import shutil
 img = QImage('bg.jpg')
 img_path = 'bg.jpg'
 mode = 1
+#edit = QTextEdit()
 
 class Label(QLabel):
     def __init__(self):
@@ -98,6 +99,8 @@ def initUI(self):
     #self.scene = Scene(self.graphicsView.size().width(),self.graphicsView.size().height())
 
     #self.graphicsView.setScene(self.scene)
+    self.frame_copy = self.frame
+
     self.scrollArea.setWidget(self.imageLabel)
     self.imageLabel.setAlignment( Qt.AlignVCenter | Qt.AlignCenter)
     self.btn_confirm.clicked.connect(self.confirm_input)
@@ -171,7 +174,7 @@ class MainWnd(QMainWindow):
                     qle.move(i+50, j+50)
         except Exception as e:
             print(e)
-        '''
+        
         try:
             qle = QLineEdit()
             self.scrollArea.addWidget(qle)
@@ -180,6 +183,12 @@ class MainWnd(QMainWindow):
 
         except Exception as e:
             print(e)
+        '''
+        try:
+            self.frame_copy.setParent(self.imageLabel)
+        except Exception as e:
+            print(e)
+
     def confirm_input(self):
         try:
             settings.count_x = int(self.lineEdit_x.text())
