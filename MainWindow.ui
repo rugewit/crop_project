@@ -67,7 +67,7 @@
          <string notr="true">font: 12pt &quot;Century&quot;;</string>
         </property>
         <property name="text">
-         <string>Колличество горизонтальных разрезаний       Колличество вертикальных разрезаний</string>
+         <string>Количество горизонтальных разрезаний       Количество вертикальных разрезаний</string>
         </property>
         <property name="textFormat">
          <enum>Qt::PlainText</enum>
@@ -147,6 +147,16 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QPushButton" name="btn_mode_1">
+        <property name="styleSheet">
+         <string notr="true">font: 12pt &quot;Century&quot;;</string>
+        </property>
+        <property name="text">
+         <string>Режим 1</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -199,6 +209,16 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_mode_2">
+        <property name="styleSheet">
+         <string notr="true">font: 12pt &quot;Century&quot;;</string>
+        </property>
+        <property name="text">
+         <string>Режим 2</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
