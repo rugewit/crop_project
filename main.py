@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QPushButton, QWidget, QDialog, QApplication, QMainWindow, QGraphicsScene, QGraphicsItem, \
-    QGraphicsRectItem, QGraphicsSceneMouseEvent, QGraphicsEllipseItem, QFrame, QLabel, QGraphicsTextItem, QFileDialog
+    QGraphicsRectItem, QGraphicsSceneMouseEvent, QGraphicsEllipseItem, QFrame, QLabel, QGraphicsTextItem, QFileDialog, \
+    QLineEdit
 from PyQt5.QtCore import Qt, QMimeData, QPoint, QRect, QSize, QRectF, QSizeF, QPropertyAnimation, QTimeLine, QObject, \
     QTimer, QTime
 from PyQt5.QtGui import QDrag, QImage, QColor, QPen, QBrush, QPaintEvent
@@ -27,6 +28,7 @@ import shutil
 
 img = QImage('bg.jpg')
 img_path = 'bg.jpg'
+mode = 1
 
 class Label(QLabel):
     def __init__(self):
@@ -38,6 +40,7 @@ class Label(QLabel):
         self.has_img = True
 
     def paintEvent(self, QPaintEvent):
+        global mode
         temp = None
         super().paintEvent(QPaintEvent)
         try:
@@ -55,6 +58,9 @@ class Label(QLabel):
         except Exception as e:
             print(e)
         painter = QPainter(self)
+        if mode == 2:
+            painter.setBrush(QBrush(QColor('white')))
+            painter.drawRect(x0,y0,settings.width,settings.height)
         if self.has_img:
             '''
             painter.setPen(QPen(QColor('green'), 1, Qt.SolidLine, Qt.RoundCap))
@@ -83,6 +89,7 @@ class Label(QLabel):
 
 
 
+
 def initUI(self):
     uic.loadUi('MainWindow.ui', self)
     self.btn_load_img.clicked.connect(self.load_image)
@@ -96,6 +103,8 @@ def initUI(self):
     self.btn_confirm.clicked.connect(self.confirm_input)
     self.btn_choose_folder.clicked.connect(self.output_folder)
     self.btn_crop.clicked.connect(self.start_croping)
+    self.btn_mode_1.clicked.connect(self.start_mode_1)
+    self.btn_mode_2.clicked.connect(self.start_mode_2)
     #self.setCentralWidget(self.scrollArea)
     #crop()
 
@@ -144,8 +153,33 @@ class MainWnd(QMainWindow):
         file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
         settings.output_folder = file
 
+    def start_mode_1(self):
+        global mode
+        mode = 1
+        self.imageLabel.update()
 
+    def start_mode_2(self):
+        global mode
+        print('mode2')
+        mode = 2
+        self.imageLabel.update()
+        '''
+        try:
+            for i in range(settings.height//2):
+                for j in range(settings.width//2):
+                    qle = QLineEdit()
+                    qle.move(i+50, j+50)
+        except Exception as e:
+            print(e)
+        '''
+        try:
+            qle = QLineEdit()
+            self.scrollArea.addWidget(qle)
+            qle.move( 50,50)
+            self.imageLabel.update()
 
+        except Exception as e:
+            print(e)
     def confirm_input(self):
         try:
             settings.count_x = int(self.lineEdit_x.text())
