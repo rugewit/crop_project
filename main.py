@@ -101,9 +101,11 @@ def initUI(self):
 
 
 def crop(path,x1, y1, x2, y2,x,y):
+    print('сохраняю в '+ path)
     global img,img_path
     im =Image.open(img_path)
-    im.crop((x1, y1, x2, y2)).save(path+'%d-%d.jpg'%(x,y))
+    save_at_template = os.path.join(path, '%d-%d.jpg'%(x,y))
+    im.crop((x1, y1, x2, y2)).save(save_at_template)
 
 
 class MainWnd(QMainWindow):
@@ -127,6 +129,8 @@ class MainWnd(QMainWindow):
         if fname != None:
             img = QImage(fname)
             img_path = fname
+            settings.width = img.width()
+            settings.height = img.height()
             try:
                 #self.graphicsView.resize(img.width(),img.height())
                 #self.scene.setSceneRect(0, 0, img.width(), img.height())
@@ -152,8 +156,8 @@ class MainWnd(QMainWindow):
 
     def start_croping(self):
         global img,img_path
+        '''
         try:
-            folder = settings.output_folder
             for the_file in os.listdir(folder):
                 file_path = os.path.join(folder, the_file)
                 try:
@@ -162,7 +166,7 @@ class MainWnd(QMainWindow):
                         # elif os.path.isdir(file_path): shutil.rmtree(file_path)
                 except Exception as e:
                     print(e)
-            '''
+            
             crop('d://temp//',0, 0,
                  20, 20, 0, 0)
             crop('d://temp//', 21, 0,
@@ -171,10 +175,10 @@ class MainWnd(QMainWindow):
                  61, 20, 1, 0)
             crop('d://temp//', 61, 0,
                  81, 20, 1, 1)
-            '''
+            
         except Exception as e:
             print(e)
-
+        '''
         try:
             print(settings.width,settings.height)
             for i in range(settings.count_x):
