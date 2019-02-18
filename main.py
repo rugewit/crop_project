@@ -29,6 +29,7 @@ img = QImage('bg.jpg')
 img_path = 'bg.jpg'
 mode = 1
 x_tmp , y_tmp = (0,0)
+d = 12
 
 class Label(QLabel):
     def __init__(self):
@@ -151,9 +152,9 @@ class MainWnd(QMainWindow):
 
     def show_dialog(self):
         d = QDialog()
+        uic.loadUi('dialog.ui', d)
         d.setWindowTitle("Dialog")
-        d.setWindowModality(Qt.ApplicationModal)
-        d.exec_()
+        d.show()
 
     def confirm_input(self):
         settings.count_x = int(self.lineEdit_x.text())
