@@ -29,7 +29,7 @@ img = QImage('bg.jpg')
 img_path = 'bg.jpg'
 mode = 1
 x_tmp , y_tmp = (0,0)
-d = 12
+#d = 12
 
 class Label(QLabel):
     def __init__(self):
@@ -151,10 +151,11 @@ class MainWnd(QMainWindow):
             print(e)
 
     def show_dialog(self):
-        d = QDialog()
-        uic.loadUi('dialog.ui', d)
-        d.setWindowTitle("Dialog")
-        d.show()
+        self.d = QDialog()
+        uic.loadUi('dialog.ui', self.d)
+        self.d.setWindowTitle("Dialog")
+        self.d.setParent(None)
+        self.d.show()
 
     def confirm_input(self):
         settings.count_x = int(self.lineEdit_x.text())
@@ -183,6 +184,12 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = MainWnd()
     ex.show()
+    '''
+    d = QDialog()
+    uic.loadUi('dialog.ui', d)
+    d.setWindowTitle("Dialog")
+    d.setParent(None)
+    '''
     app.exec_()
 
 
