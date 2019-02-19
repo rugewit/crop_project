@@ -57,6 +57,7 @@ class Label(QLabel):
         if mode == 2:
             painter.setBrush(QBrush(QColor('white')))
             painter.drawRect(x0, y0, settings.width, settings.height)
+        #отображение текста на ячейке.На будущее
         if mode == 3:
             painter.setBrush(QBrush(QColor('white')))
             painter.drawRect(x0, y0, settings.width, settings.height)
@@ -74,6 +75,9 @@ class Label(QLabel):
                                  y0 + i * (height // settings.count_y))
 
     def mousePressEvent(self, e):
+        pass
+        #заготовка на будущее
+        '''
         global mode, curX, curY, curRow, curColumn
         super().mousePressEvent(e)
         curX, curY = e.x(), e.y()
@@ -85,7 +89,7 @@ class Label(QLabel):
             mode = 3
             self.update()
         self.update()
-
+        '''
 
 # инициализация графических элементов
 def initUI(self):
