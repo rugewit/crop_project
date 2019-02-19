@@ -23,12 +23,11 @@ import os
 import shutil
 
 
-
-
 img = QImage('bg.jpg')
 img_path = 'bg.jpg'
 mode = 1
 x_tmp , y_tmp = (0,0)
+a,b=(0,0)
 #d = 12
 
 class Label(QLabel):
@@ -45,24 +44,28 @@ class Label(QLabel):
         temp = None
         super().paintEvent(QPaintEvent)
         temp = self.pixmap()
-        print(temp)
-        print(temp.rect())
-        print(temp.size())
+        #print(temp)
+        #print(temp.rect())
+        #print(temp.size())
         x0 = (self.width() - temp.width()) / 2
         y0 = (self.height() - temp.height()) / 2
         if x0 < 0:
             x0 = 0
         if y0 < 0:
             y0 = 0
-        print(x0, y0)
+        #print(x0, y0)
         painter = QPainter(self)
         if mode == 2:
             painter.setBrush(QBrush(QColor('white')))
             painter.drawRect(x0,y0,settings.width,settings.height)
-            if mode == 3:
-                painter.setPen(QPen(QColor('green'), 5, Qt.SolidLine, Qt.RoundCap))
-                painter.drawPoint(x_tmp , y_tmp)
-                painter.setPen(QPen(QColor('red'), 1, Qt.SolidLine, Qt.RoundCap))
+        if mode == 3:
+            painter.setBrush(QBrush(QColor('white')))
+            painter.drawRect(x0, y0, settings.width, settings.height)
+            painter.setPen(QPen(QColor('green'), 5, Qt.SolidLine, Qt.RoundCap))
+            print((a,b))
+            #painter.drawPoint(x_tmp , y_tmp)
+            painter.drawRect(x_tmp , y_tmp, 20, 20)
+            painter.setPen(QPen(QColor('red'), 1, Qt.SolidLine, Qt.RoundCap))
         if self.has_img:
             width = temp.width()
             height = temp.height()
@@ -74,13 +77,15 @@ class Label(QLabel):
 
 
     def mousePressEvent(self, e):
-        global mode
+        global mode,x_tmp,y_tmp,a,b
         super().mousePressEvent(e)
         x_tmp,y_tmp = e.x(), e.y()
-        if 121<=x_tmp<=968 and 94<=y_tmp<=571 and mode == 2:
+        if 121<=x_tmp<=968 and 94<=y_tmp<=571 and mode in(2,3):
+            #print(x_tmp,y_tmp)
             i = (x_tmp - 121) // (self.pixmap().width()//settings.count_x)
             y = (y_tmp - 94) // (self.pixmap().height()//settings.count_y)
-            x_tmp, y_tmp = i, y
+            #print(i,y)
+            a,b = (i,y)
             mode = 3
             self.update()
         self.update()
@@ -128,7 +133,7 @@ class MainWnd(QMainWindow):
             settings.width = img.width()
             settings.height = img.height()
             self.imageLabel.setImage(img)
-        print('by loading',img)
+        #print('by loading',img)
 
     def output_folder(self):
         file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
@@ -141,7 +146,7 @@ class MainWnd(QMainWindow):
 
     def start_mode_2(self):
         global mode
-        print('mode2')
+        #print('mode2')
         try:
             mode = 2
             self.imageLabel.update()
@@ -165,12 +170,12 @@ class MainWnd(QMainWindow):
 
     def start_croping(self):
         global img,img_path
-        print(settings.width,settings.height)
+        #print(settings.width,settings.height)
         for i in range(settings.count_x):
             for y in range(settings.count_y):
-                print('x1:',i*(settings.width//settings.count_x))
+                #print('x1:',i*(settings.width//settings.count_x))
                 #print('deltax:',(settings.width//settings.count_x))
-                print('y1',y*(settings.height//settings.count_y))
+                #print('y1',y*(settings.height//settings.count_y))
                 #print('deltay',(settings.height//settings.count_y))
                 x2 = (i+1)*(settings.width//settings.count_x)
                 y2 = (y+1)*(settings.height//settings.count_y)
