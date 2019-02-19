@@ -13,5 +13,6 @@ while flag:
             flag = True
             random.shuffle(data)
             break
-print(data)
+for i in range(0,3*n*m-3,3):
+    print(data[i],data[i+1],data[i+2])
 

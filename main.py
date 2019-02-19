@@ -1,47 +1,38 @@
 import sys
-from PyQt5.QtWidgets import QPushButton, QWidget, QDialog, QApplication, QMainWindow, QGraphicsScene, QGraphicsItem, \
-    QGraphicsRectItem, QGraphicsSceneMouseEvent, QGraphicsEllipseItem, QFrame, QLabel, QGraphicsTextItem, QFileDialog, \
-    QLineEdit
-from PyQt5.QtCore import Qt, QMimeData, QPoint, QRect, QSize, QRectF, QSizeF, QPropertyAnimation, QTimeLine, QObject, \
-    QTimer, QTime
-from PyQt5.QtGui import QDrag, QImage, QColor, QPen, QBrush, QPaintEvent
+from PyQt5.QtWidgets import QDialog, QMainWindow, QLabel, QFileDialog
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QImage, QColor, QPen, QBrush
 from PyQt5 import uic
-import random
-import winsound
-from PyQt5.QtWidgets import (QApplication, QGraphicsView,
-                             QGraphicsPixmapItem, QGraphicsScene)
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QPainter, QPixmap
-from PyQt5.QtCore import (QObject, QPointF,
-                          QPropertyAnimation, pyqtProperty)
 import sys
-from PyQt5.uic.properties import QtGui
-# import settings
-from PyQt5.QtGui import QTransform
 import settings
 from PIL import Image
 import os
-import shutil
 
 img = QImage('bg.jpg')
 img_path = 'bg.jpg'
+# моды нужны для различной отрисовки в paintEvent()
 mode = 1
-x_tmp, y_tmp = (0, 0)
-curLine, curColumn = (0, 0)
+# текущие координаты щелчка мыши
+curX, curY = (0, 0)
+# текущая ячейка на поле через номер строки и столбца
+curRow, curColumn = (0, 0)
 
 
-# d = 12
+# класс ,отвечающий за окно для редактирования
 class TunDialog(QDialog):
     def __init__(self):
         super().__init__()
         uic.loadUi('dialog.ui', self)
         self.setWindowTitle("Dialog")
-        self.setParent(None)
         self.btn_dial_print.clicked.connect(self.start_print_text)
 
     def start_print_text(self):
-        print('биба')
+        pass
 
 
+# класс ,отвечающий за вывод картинки (или белого фона) с последующими линиями
 class Label(QLabel):
     def __init__(self):
         super().__init__()
@@ -52,22 +43,16 @@ class Label(QLabel):
         self.has_img = True
 
     def paintEvent(self, QPaintEvent):
-        global mode, x_tmp, y_tmp
-        temp = None
+        global mode, curX, curY
         super().paintEvent(QPaintEvent)
-        temp = self.pixmap()
-        width = temp.width()
-        height = temp.height()
-        # print(temp)
-        # print(temp.rect())
-        # print(temp.size())
-        x0 = (self.width() - temp.width()) / 2
-        y0 = (self.height() - temp.height()) / 2
+        width = settings.width
+        height = settings.height
+        x0 = (self.width() - width) // 2
+        y0 = (self.height() - height) // 2
         if x0 < 0:
             x0 = 0
         if y0 < 0:
             y0 = 0
-        # print(x0, y0)
         painter = QPainter(self)
         if mode == 2:
             painter.setBrush(QBrush(QColor('white')))
@@ -76,15 +61,10 @@ class Label(QLabel):
             painter.setBrush(QBrush(QColor('white')))
             painter.drawRect(x0, y0, settings.width, settings.height)
             painter.setPen(QPen(QColor('green'), 5, Qt.SolidLine, Qt.RoundCap))
-            print((curLine, curColumn))
-            # painter.drawPoint(x_tmp , y_tmp)
-            # painter.drawRect(x_tmp, y_tmp, 20, 20)
-            print((x0 + curLine * width // settings.width, y0 + curColumn * height // settings.height))
-            painter.drawText(x0 + curLine * width // settings.count_x, y0 + curColumn * height // settings.count_y,
-                             'БИБА')
+            painter.drawText(x0 + curRow * width // settings.count_x, y0 + curColumn * height // settings.count_y,
+                             'Здесь')
             painter.setPen(QPen(QColor('red'), 1, Qt.SolidLine, Qt.RoundCap))
         if self.has_img:
-
             painter.setPen(QPen(QColor('red'), 1, Qt.SolidLine, Qt.RoundCap))
             for i in range(0, settings.count_x + 1):
                 painter.drawLine(x0 + i * width // settings.count_x, y0, x0 + i * width // settings.count_x,
@@ -93,29 +73,25 @@ class Label(QLabel):
                 painter.drawLine(x0, y0 + i * (height // settings.count_y), x0 + width,
                                  y0 + i * (height // settings.count_y))
 
-    def drawText(self):
-        painter = QPainter(self)
-        painter.drawText(0, 0, 'ghbd')
-
     def mousePressEvent(self, e):
-        global mode, x_tmp, y_tmp, curLine, curColumn
+        global mode, curX, curY, curRow, curColumn
         super().mousePressEvent(e)
-        x_tmp, y_tmp = e.x(), e.y()
-        if 121 <= x_tmp <= 968 and 94 <= y_tmp <= 571 and mode in (2, 3):
-            # print(x_tmp,y_tmp)
-            i = (x_tmp - 121) // (self.pixmap().width() // settings.count_x)
-            y = (y_tmp - 94) // (self.pixmap().height() // settings.count_y)
-            curLine, curColumn = (i, y)
+        curX, curY = e.x(), e.y()
+        # смотрим ,попал ли щелчёк в картинку и определяем ячейку по столбу и строке
+        if 121 <= curX <= 968 and 94 <= curY <= 571 and mode in (2, 3):
+            i = (curX - 121) // (self.pixmap().width() // settings.count_x)
+            y = (curY - 94) // (self.pixmap().height() // settings.count_y)
+            curRow, curColumn = (i, y)
             mode = 3
             self.update()
         self.update()
 
 
+# инициализация графических элементов
 def initUI(self):
     uic.loadUi('MainWindow.ui', self)
     self.btn_load_img.clicked.connect(self.load_image)
     self.imageLabel = Label()
-    self.frame_copy = self.frame
     self.scrollArea.setWidget(self.imageLabel)
     self.imageLabel.setAlignment(Qt.AlignVCenter | Qt.AlignCenter)
     self.btn_confirm.clicked.connect(self.confirm_input)
@@ -125,8 +101,9 @@ def initUI(self):
     self.btn_mode_2.clicked.connect(self.start_mode_2)
 
 
+# разрезание фотографии
 def crop(path, x1, y1, x2, y2, x, y):
-    print('сохраняю в ' + path)
+    # print('сохраняю в ' + path)
     global img, img_path
     im = Image.open(img_path)
     save_at_template = os.path.join(path, '%d-%d.jpg' % (x, y))
@@ -140,83 +117,62 @@ class MainWnd(QMainWindow):
         super().__init__()
         initUI(self)
         self.imageLabel.setImage(img)
+        # ширина и высота картинки
         settings.width = img.width()
         settings.height = img.height()
 
     def load_image(self):
-
         global img, img_path
-        fname = None
         fname, _filter = QFileDialog.getOpenFileName(self, 'Open file',
                                                      'c:\\', "Image files (*.jpg *.png)")
-        if fname != None:
+        if fname is not None:
             img = QImage(fname)
             img_path = fname
             settings.width = img.width()
             settings.height = img.height()
             self.imageLabel.setImage(img)
-        # print('by loading',img)
 
     def output_folder(self):
         file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-        print(file)
         settings.output_folder = file
 
     def start_mode_1(self):
         global mode
         mode = 1
+        # нужен для перерисовки Label'a
         self.imageLabel.update()
 
     def start_mode_2(self):
         global mode
-        # print('mode2')
-        try:
-            mode = 2
-            self.imageLabel.update()
-            # self.frame_copy.setParent(self.imageLabel)
-            self.show_dialog()
-        except Exception as e:
-            print(e)
+        mode = 2
+        self.imageLabel.update()
+        self.show_dialog()
 
+    # окно для редактирования ячейки
     def show_dialog(self):
-        try:
-            self.dialog = TunDialog()
-            self.dialog.show()
-        except Exception as e:
-            print(e)
+        self.dialog = TunDialog()
+        self.dialog.show()
 
+    # количество разрезаний по х , у
     def confirm_input(self):
         settings.count_x = int(self.lineEdit_x.text())
         settings.count_y = int(self.lineEdit_y.text())
         self.imageLabel.update()
 
+    # начать разрезание
     def start_croping(self):
         global img, img_path
-        # print(settings.width,settings.height)
         for i in range(settings.count_x):
             for y in range(settings.count_y):
-                # print('x1:',i*(settings.width//settings.count_x))
-                # print('deltax:',(settings.width//settings.count_x))
-                # print('y1',y*(settings.height//settings.count_y))
-                # print('deltay',(settings.height//settings.count_y))
                 x2 = (i + 1) * (settings.width // settings.count_x)
                 y2 = (y + 1) * (settings.height // settings.count_y)
                 crop(settings.output_folder, i * (settings.width // settings.count_x),
                      y * (settings.height // settings.count_y),
                      x2, y2, i, y)
 
-    def getfile(self):
-        pass
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = MainWnd()
     ex.show()
-    '''
-    d = QDialog()
-    uic.loadUi('dialog.ui', d)
-    d.setWindowTitle("Dialog")
-    d.setParent(None)
-    '''
     app.exec_()
