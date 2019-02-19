@@ -42,10 +42,6 @@ class TunDialog(QDialog):
         print('биба')
 
 
-
-
-
-
 class Label(QLabel):
     def __init__(self):
         super().__init__()
@@ -82,9 +78,10 @@ class Label(QLabel):
             painter.setPen(QPen(QColor('green'), 5, Qt.SolidLine, Qt.RoundCap))
             print((curLine, curColumn))
             # painter.drawPoint(x_tmp , y_tmp)
-            #painter.drawRect(x_tmp, y_tmp, 20, 20)
-            print((x0+curLine*width//settings.width,y0+curColumn*height//settings.height))
-            painter.drawText(x0+curLine*width//settings.count_x,y0+curColumn*height//settings.count_y,'БИБА')
+            # painter.drawRect(x_tmp, y_tmp, 20, 20)
+            print((x0 + curLine * width // settings.width, y0 + curColumn * height // settings.height))
+            painter.drawText(x0 + curLine * width // settings.count_x, y0 + curColumn * height // settings.count_y,
+                             'БИБА')
             painter.setPen(QPen(QColor('red'), 1, Qt.SolidLine, Qt.RoundCap))
         if self.has_img:
 
@@ -98,10 +95,10 @@ class Label(QLabel):
 
     def drawText(self):
         painter = QPainter(self)
-        painter.drawText(0,0,'ghbd')
+        painter.drawText(0, 0, 'ghbd')
 
     def mousePressEvent(self, e):
-        global mode, x_tmp, y_tmp,curLine,curColumn
+        global mode, x_tmp, y_tmp, curLine, curColumn
         super().mousePressEvent(e)
         x_tmp, y_tmp = e.x(), e.y()
         if 121 <= x_tmp <= 968 and 94 <= y_tmp <= 571 and mode in (2, 3):
@@ -126,6 +123,7 @@ def initUI(self):
     self.btn_crop.clicked.connect(self.start_croping)
     self.btn_mode_1.clicked.connect(self.start_mode_1)
     self.btn_mode_2.clicked.connect(self.start_mode_2)
+
 
 def crop(path, x1, y1, x2, y2, x, y):
     print('сохраняю в ' + path)
